@@ -1,0 +1,10 @@
+CC := g++
+SRCDIR := src
+BUILDDIR := build
+DEPDIR := dep
+BINDIR := bin
+TESTSDIR := tests
+SRCEXT := cpp
+CFLAGS := -g
+LIB := -larmadillo
+INC := -I include

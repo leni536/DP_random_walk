@@ -1,0 +1,33 @@
+include Makefile_config
+
+TARGET_SOURCES := ${wildcard ${SRCDIR}/target/*.${SRCEXT}}
+TARGETS := ${patsubst ${SRCDIR}/target/%.${SRCEXT},bin/%,${TARGET_SOURCES}}
+TEST_SOURCES := ${wildcard ${SRCDIR}/tests/*.${SRCEXT}}
+TESTS := ${patsubst ${SRCDIR}/tests/%.${SRCEXT},tests/%,${TEST_SOURCES}}
+LIB_SOURCES := ${wildcard ${SRCDIR}/*.${SRCEXT}}
+SOURCES := ${TARGET_SOURCES} ${TEST_SOURCES} ${LIB_SOURCES}
+OBJECTS := ${patsubst ${SRCDIR}/%.${SRCEXT},${BUILDDIR}/%.o,${SOURCES}}
+LIB_OBJECTS := ${patsubst ${SRCDIR}/%.${SRCEXT},${BUILDDIR}/%.o,${LIB_SOURCES}}
+DEPENDS := ${patsubst ${SRCDIR}/%.${SRCEXT},${DEPDIR}/%.d,${SOURCES}}
+
+target: ${TARGETS}
+
+tests: ${TESTS}
+
+all: target tests
+	
+${BINDIR}/% : ${BUILDDIR}/target/%.o ${LIB_OBJECTS}
+	${CC} ${LIB} $^ -o $@
+${TESTSDIR}/% : ${BUILDDIR}/tests/%.o ${LIB_OBJECTS}
+	${CC} ${LIB} $^ -o $@
+
+include ${DEPENDS}
+
+${BUILDDIR}/%.o: ${SRCDIR}/%.${SRCEXT}
+	@mkdir -p `dirname $@` ;\
+	echo '${CC} -c ${INC} ${CFLAGS} $< -o $@' ;\
+	      ${CC} -c ${INC} ${CFLAGS} $< -o $@
+
+.PHONY: target tests all clean
+
+.SECONDARY: ${OBJECTS}
