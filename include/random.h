@@ -6,6 +6,7 @@ namespace randgen{
 		public:
 			static gen* Instance();
 			static gen* Instance(uint32_t seed);
+			boost::random::mt19937& getGen();
 		private:
 			boost::random::mt19937 generator;
 			gen() {};

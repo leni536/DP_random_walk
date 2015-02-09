@@ -4,11 +4,11 @@ SOURCES := ${shell find ${SRCDIR} -type f -iname '*.${SRCEXT}'}
 DEPENDS := ${patsubst ${SRCDIR}/%.${SRCEXT},${DEPDIR}/%.d,${SOURCES}}
 
 target: ${DEPENDS}
-	make -f Makefile_main
+	@make -f Makefile_main
 tests: ${DEPENDS}
-	make -f Makefile_main tests
+	@make -f Makefile_main tests
 all: ${DEPENDS}
-	make -f Makefile_main all
+	@make -f Makefile_main all
 clean:
 	rm -rf ${BUILDDIR}/*	\
 	       ${BINDIR}/*	\

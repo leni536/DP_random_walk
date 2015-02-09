@@ -23,5 +23,10 @@ gen* gen::Instance(uint32_t seed)
 	return pInstance;
 }
 
+boost::random::mt19937& gen::getGen()
+{
+	return this->generator;
+}
+
 
 }
