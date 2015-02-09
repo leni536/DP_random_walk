@@ -1,6 +1,6 @@
 #ifndef LA_H
 #define LA_H
-#include<armadillo>
+#include <armadillo>
 
 namespace la
 {

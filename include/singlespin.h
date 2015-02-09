@@ -6,9 +6,13 @@
 
 class SingleSpin {
 	private:
-	public:
+		double omega;
 		std::vector<double> times;
+		std::vector<arma::vec> kvecs;
 		std::vector<arma::vec> spins;
+	public:
+		SingleSpin();
+		void Step();
 };
 
 #endif

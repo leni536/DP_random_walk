@@ -1,14 +1,15 @@
 #include <boost/random.hpp>
 
 namespace randgen{
+	typedef boost::random::mt19937 pseudogen;
 	class gen
 	{
 		public:
 			static gen* Instance();
 			static gen* Instance(uint32_t seed);
-			boost::random::mt19937& getGen();
+			pseudogen& getGen();
 		private:
-			boost::random::mt19937 generator;
+			pseudogen generator;
 			gen() {};
 			gen(uint32_t seed): generator(seed) {};
 			gen(gen const& copy);
