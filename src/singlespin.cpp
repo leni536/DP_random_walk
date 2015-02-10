@@ -19,7 +19,7 @@ SingleSpin::SingleSpin()
 	spins.push_back(init);
 
 	// random initial k vec (measured in k_F)
-	randgen::pseudogen gen=randgen::gen::Instance()->getGen();
+	randgen::pseudogen& gen=randgen::gen::Instance()->getGen();
 	boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
 	kvecs.push_back(RandUnitVec(gen));
 	omega=0.1;
@@ -27,7 +27,7 @@ SingleSpin::SingleSpin()
 
 void SingleSpin::Step()
 {
-	randgen::pseudogen gen=randgen::gen::Instance()->getGen();
+	randgen::pseudogen& gen=randgen::gen::Instance()->getGen();
 	boost::random::exponential_distribution<> ExpDist(1.);
 	boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
 
@@ -113,4 +113,26 @@ int SingleSpin::binary_search_t(const double &t)
 			rmax=i-1;
 	}
 	return rmin;
+}
+
+
+void SingleSpin::FillSzVec(std::vector<double>& Sz, const int& size, const double& dt)
+{
+	while (GetLastTime() < (size-1)*dt)
+		Step();
+	int ind=0;
+	double next_t=times[ind+1];
+	for(int i=0; i<size; i++)
+	{
+		while (i*dt>next_t)
+		{
+			ind++;
+			next_t=times[ind+1];
+		}
+		double interval = i*dt - times[ind];
+		arma::vec s=spins[ind];
+		arma::vec k=kvecs[ind];
+		s = la::Rotate(s,k*omega*interval);
+		Sz[i] += s[2];
+	}
 }

@@ -25,7 +25,7 @@ gen* gen::Instance(uint32_t seed)
 
 pseudogen& gen::getGen()
 {
-	return this->generator;
+	return generator;
 }
 
 

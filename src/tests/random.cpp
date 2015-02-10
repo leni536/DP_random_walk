@@ -6,7 +6,7 @@ using namespace std;
 
 int main()
 {
-	randgen::pseudogen randgen = randgen::gen::Instance()->getGen();
+	randgen::pseudogen& randgen = randgen::gen::Instance()->getGen();
 	boost::random::uniform_real_distribution<> U(0,1);
 	for (int i=0; i< 10; i++)
 	{

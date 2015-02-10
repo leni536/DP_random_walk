@@ -18,6 +18,7 @@ class SingleSpin {
 		void Print(std::ostream& out=std::cout);
 		void RawPrint(std::ostream& out=std::cout);
 		arma::vec GetSpin(const double &t);
+		void FillSzVec(std::vector<double>& Sz, const int& size, const double& dt);
 		double GetFirstTime() {return times.front();}
 		double GetLastTime()  {return times.back(); }
 };
