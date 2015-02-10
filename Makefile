@@ -18,3 +18,4 @@ clean:
 ${DEPDIR}/%.d: ${SRCDIR}/%.${SRCEXT}
 	@mkdir -p ${shell dirname $@} ; \
         $(CC) -MM ${INC} $< > $@ 
+.PHONY: target tests all clean
