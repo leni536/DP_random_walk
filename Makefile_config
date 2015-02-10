@@ -6,5 +6,5 @@ BINDIR := bin
 TESTSDIR := tests
 SRCEXT := cpp
 CFLAGS := -g
-LIB := -larmadillo -lboost_random
+LIB := -larmadillo -lboost_random -lboost_program_options
 INC := -I include

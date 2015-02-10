@@ -6,7 +6,7 @@
 #include <vector>
 #include <iostream>
 
-SingleSpin::SingleSpin()
+SingleSpin::SingleSpin(const double& o) : omega(o)
 {
 // Initial conditions
 
@@ -22,7 +22,6 @@ SingleSpin::SingleSpin()
 	randgen::pseudogen& gen=randgen::gen::Instance()->getGen();
 	boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
 	kvecs.push_back(RandUnitVec(gen));
-	omega=0.1;
 }
 
 void SingleSpin::Step()

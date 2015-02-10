@@ -13,7 +13,7 @@ class SingleSpin {
 		std::vector<arma::vec> spins;
 		int binary_search_t(const double &t);
 	public:
-		SingleSpin();
+		SingleSpin(const double& o=0.2); 
 		void Step();
 		void Print(std::ostream& out=std::cout);
 		void RawPrint(std::ostream& out=std::cout);
