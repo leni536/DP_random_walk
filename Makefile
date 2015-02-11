@@ -13,9 +13,11 @@ clean:
 	rm -rf ${BUILDDIR}/*	\
 	       ${BINDIR}/*	\
 	       ${TESTSDIR}/*    \
-	       $(DEPDIR)/*
+	       $(DEPDIR)/*;	\
+	echo > include/version.h
 
 ${DEPDIR}/%.d: ${SRCDIR}/%.${SRCEXT}
 	@mkdir -p ${shell dirname $@} ; \
-        $(CC) -MM ${INC} $< > $@ 
+	echo -n "`dirname '${patsubst ${SRCDIR}/%.${SRCEXT},${BUILDDIR}/%.o,$<}'`/" > $@; \
+        $(CC) -MM ${INC} $< >> $@ 
 .PHONY: target tests all clean

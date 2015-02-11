@@ -5,6 +5,7 @@
 #include <boost/program_options.hpp>
 #include "singlespin.h"
 #include "random.h"
+#include "version.h"
 
 using namespace std;
 namespace po=boost::program_options;

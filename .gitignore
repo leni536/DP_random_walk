@@ -2,4 +2,5 @@ bin/*
 build/*
 tests/*
 dep/*
+include/version.h
 !.gitkeep

@@ -28,6 +28,10 @@ ${BUILDDIR}/%.o: ${SRCDIR}/%.${SRCEXT}
 	echo '${CC} -c ${INC} ${CFLAGS} $< -o $@' ;\
 	      ${CC} -c ${INC} ${CFLAGS} $< -o $@
 
-.PHONY: target tests all clean
+include/version.h:
+	@echo "Creating version string..."; \
+	./create_version.sh 2> /dev/null
+
+.PHONY: target tests all clean include/version.h
 
 .SECONDARY: ${OBJECTS}
