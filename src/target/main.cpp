@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
 	*out << "# t, Sz" << endl;
 	for(int i=0;i<size;i++)
 	{
-		*out 	<< i*1 
+		*out 	<< i*timestep
 			<< ", " 
 			<< ((i==0) ? 1. :  sz[i]/(double)n_spins )
 			<< endl;
