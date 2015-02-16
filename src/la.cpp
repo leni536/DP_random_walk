@@ -8,7 +8,7 @@ using namespace arma;
 
 vec Rotate(vec v0, vec phi)
 {
-	double phi_scal=norm(phi);
+	double phi_scal=norm(phi,2);
 	vec dir=phi/phi_scal;
 	return cos(phi_scal)*v0 +
 		sin(phi_scal)*cross(dir,v0) +
