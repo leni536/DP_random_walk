@@ -6,14 +6,18 @@
 #include <iostream>
 
 class SingleSpin {
+	public:
+		enum model_t {naiv,burkov_2d};
 	private:
+		model_t model;
+
 		double omega;
 		std::vector<double> times;
 		std::vector<arma::vec> kvecs;
 		std::vector<arma::vec> spins;
 		int binary_search_t(const double &t);
 	public:
-		SingleSpin(const double& o=0.2); 
+		SingleSpin(const double& o=0.2,const model_t& m=burkov_2d); 
 		void Step();
 		void Print(std::ostream& out=std::cout);
 		void RawPrint(std::ostream& out=std::cout);

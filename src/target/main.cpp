@@ -26,6 +26,7 @@ int main(int argc, char* argv[])
 	    ("omega"	, po::value<double>()	-> default_value(0.2)	, "set the absolute value of Larmor precession")
 	    ("seed"	, po::value<string>()	-> default_value("rand"), "set the seed for the random generator")
 	    ("output,o"	, po::value<string>()	-> default_value("-")	, "output file path")
+	    ("model,m"	, po::value<string>()	-> default_value("naiv"), "name of the model")
 	;
 	po::positional_options_description pos_desc;
 	pos_desc.add("output",-1);
@@ -52,6 +53,17 @@ int main(int argc, char* argv[])
 	double timestep	= vm["timestep"].as<double>();
 	double omega	= vm["omega"].as<double>();
 	string fname	= vm["output"].as<string>();
+	string model_str= vm["model"].as<string>();
+
+	//setting the model param
+	SingleSpin::model_t model;
+	if (model_str=="naiv") model=SingleSpin::naiv;
+	else if (model_str=="burkov_2d") model=SingleSpin::burkov_2d;
+	else 
+	{
+		cerr << "Unknown model name: " << model_str << endl;
+		return 2;
+	}
 
 	//Setting output stream
 	ostream *out=&cout;
@@ -82,7 +94,7 @@ int main(int argc, char* argv[])
 	s=new SingleSpin;
 	for(int i=0;i<n_spins;i++)
 	{
-		s=new SingleSpin(omega);
+		s=new SingleSpin(omega,model);
 		s->FillSzVec(sz,size,timestep);
 		delete s;
 	}
@@ -96,6 +108,7 @@ int main(int argc, char* argv[])
 	*out << "#  timestep: " << timestep << endl;
 	*out << "#  omega: " << omega << endl;
 	*out << "#  seed: " << seed << endl;
+	*out << "#  model: " << model_str << endl;
 	*out << "# t, Sz" << endl;
 	for(int i=0;i<size;i++)
 	{

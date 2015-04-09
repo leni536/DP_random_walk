@@ -6,7 +6,7 @@
 #include <vector>
 #include <iostream>
 
-SingleSpin::SingleSpin(const double& o) : omega(o)
+SingleSpin::SingleSpin(const double& o,const model_t& m) : omega(o), model(m)
 {
 // Initial conditions
 
@@ -20,15 +20,28 @@ SingleSpin::SingleSpin(const double& o) : omega(o)
 
 	// random initial k vec (measured in k_F)
 	randgen::pseudogen& gen=randgen::gen::Instance()->getGen();
-	boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
-	kvecs.push_back(RandUnitVec(gen));
+
+	if (model==naiv)
+	{
+		// 3D model, k vectors are from the unit sphere
+		boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
+		kvecs.push_back(RandUnitVec(gen));
+	}
+	else if (model==burkov_2d)
+	{
+		// 2D model, k vectors are from the unit circle, however we treat them as 3D vectors.
+		boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(2);
+		arma::vec temp=RandUnitVec(gen);
+		temp.reshape(3,1);
+		kvecs.push_back(temp);
+	}
+
 }
 
 void SingleSpin::Step()
 {
 	randgen::pseudogen& gen=randgen::gen::Instance()->getGen();
 	boost::random::exponential_distribution<> ExpDist(1.);
-	boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
 
 	//Scattering follows Poisson distribution
 	double interval = ExpDist(gen);
@@ -40,7 +53,20 @@ void SingleSpin::Step()
 
 	//New values
 	s  = la::Rotate(s,k*omega*interval);
-	k  = RandUnitVec(gen);
+
+	if (model==naiv)
+	{
+		boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
+		k = RandUnitVec(gen);
+	}
+	else if (model==burkov_2d)
+	{
+		boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(2);
+		k = RandUnitVec(gen);
+		k.reshape(3,1);
+
+	}
+
 	t += interval;
 
 	kvecs.push_back(k);
