@@ -7,7 +7,7 @@
 
 class SingleSpin {
 	public:
-		enum model_t {naiv,burkov_2d};
+		enum model_t {naiv,burkov_2d,burkov_2d_Sx};
 	private:
 		model_t model;
 
@@ -17,7 +17,7 @@ class SingleSpin {
 		std::vector<arma::vec> spins;
 		int binary_search_t(const double &t);
 	public:
-		SingleSpin(const double& o=0.2,const model_t& m=burkov_2d); 
+		SingleSpin(const double& o=0.2,const model_t& m=naiv); 
 		void Step();
 		void Print(std::ostream& out=std::cout);
 		void RawPrint(std::ostream& out=std::cout);

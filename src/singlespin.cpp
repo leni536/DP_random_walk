@@ -15,7 +15,10 @@ SingleSpin::SingleSpin(const double& o,const model_t& m) : omega(o), model(m)
 
 	// s_z=1
 	arma::vec init;
-	init << 0 << 0 << 1 ;
+	if (model==naiv || model==burkov_2d)
+		init << 0 << 0 << 1 ;
+	else if (model==burkov_2d_Sx)
+		init << 1 << 0 << 0 ;
 	spins.push_back(init);
 
 	// random initial k vec (measured in k_F)
@@ -27,7 +30,7 @@ SingleSpin::SingleSpin(const double& o,const model_t& m) : omega(o), model(m)
 		boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
 		kvecs.push_back(RandUnitVec(gen));
 	}
-	else if (model==burkov_2d)
+	else if (model==burkov_2d || model==burkov_2d_Sx)
 	{
 		// 2D model, k vectors are from the unit circle, however we treat them as 3D vectors.
 		boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(2);
@@ -59,7 +62,7 @@ void SingleSpin::Step()
 		boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
 		k = RandUnitVec(gen);
 	}
-	else if (model==burkov_2d)
+	else if (model==burkov_2d || model==burkov_2d_Sx)
 	{
 		boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(2);
 		k = RandUnitVec(gen);
@@ -158,6 +161,9 @@ void SingleSpin::FillSzVec(std::vector<double>& Sz, const int& size, const doubl
 		arma::vec s=spins[ind];
 		arma::vec k=kvecs[ind];
 		s = la::Rotate(s,k*omega*interval);
-		Sz[i] += s[2];
+		if (model==naiv || model==burkov_2d)
+			Sz[i] += s[2];
+		else if (model==burkov_2d_Sx)
+			Sz[i] += s[0];
 	}
 }
