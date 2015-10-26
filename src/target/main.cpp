@@ -52,6 +52,7 @@ int main(int argc, char* argv[])
 	double duration	= vm["duration"].as<double>();
 	double timestep	= vm["timestep"].as<double>();
 	double omega	= vm["omega"].as<double>();
+	string seed	= vm["seed"].as<string>();
 	string fname	= vm["output"].as<string>();
 	string model_str= vm["model"].as<string>();
 
@@ -84,9 +85,17 @@ int main(int argc, char* argv[])
 	int size=duration/timestep;
 
 	//Seed random generator
-	boost::random::random_device rd;
-	unsigned int seed = rd();
-	randgen::gen::Instance(seed);
+	unsigned int seed_int;
+	if (seed == "rand")
+	{
+		boost::random::random_device rd;
+		seed_int = rd();
+	}
+	else
+	{
+		seed_int = stoi(seed);
+	}
+	randgen::gen::Instance(seed_int);
 
 	//Run simulation
 	SingleSpin * s;

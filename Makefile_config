@@ -5,6 +5,6 @@ DEPDIR := dep
 BINDIR := bin
 TESTSDIR := tests
 SRCEXT := cpp
-CFLAGS := -g
+CFLAGS := -g -std=c++11
 LIB := -larmadillo -lboost_random -lboost_program_options
 INC := -I include
