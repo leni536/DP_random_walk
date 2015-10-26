@@ -6,23 +6,36 @@
 #include <vector>
 #include <iostream>
 
-SingleSpin::SingleSpin(const double& o,const model_t& m) : omega(o), model(m)
+SingleSpin::SingleSpin(const double& o,const model_t& m,const meas_t& meas,double B_m,double tmin) : omega(o), model(m), meas(meas), tmin(tmin)
 {
 // Initial conditions
+	randgen::pseudogen& gen=randgen::gen::Instance()->getGen();
 
 	// t0=0
-	times.push_back(0);
+	times.push_back(tmin);
+
+	if (model==naiv || model==burkov_2d)
+		B_meas << 0 << 0 << B_m ;
+	else if (model==burkov_2d_Sx)
+		B_meas << B_m << 0 << 0 ;
 
 	// s_z=1
 	arma::vec init;
-	if (model==naiv || model==burkov_2d)
-		init << 0 << 0 << 1 ;
-	else if (model==burkov_2d_Sx)
-		init << 1 << 0 << 0 ;
+
+	if (meas==prep)
+	{
+		if (model==naiv || model==burkov_2d)
+			init << 0 << 0 << 1 ;
+		else if (model==burkov_2d_Sx)
+			init << 1 << 0 << 0 ;
+	}
+	else if (meas==B_shot)
+	{
+		boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
+		init=RandUnitVec(gen);
+	}
 	spins.push_back(init);
 
-	// random initial k vec (measured in k_F)
-	randgen::pseudogen& gen=randgen::gen::Instance()->getGen();
 
 	if (model==naiv)
 	{
@@ -38,7 +51,6 @@ SingleSpin::SingleSpin(const double& o,const model_t& m) : omega(o), model(m)
 		temp.reshape(3,1);
 		kvecs.push_back(temp);
 	}
-
 }
 
 void SingleSpin::Step()
@@ -55,7 +67,20 @@ void SingleSpin::Step()
 	double t    = times.back();
 
 	//New values
-	s  = la::Rotate(s,k*omega*interval);
+	if (t<0)
+	{
+		if (t+interval<0)
+			s= la::Rotate(s,k*omega*interval);
+		else
+		{
+			s= la::Rotate(s,k*omega*(-t));
+			s= la::Rotate(s,(k*omega+B_meas)*(interval+t));
+		}
+	}
+	else
+	{
+		s  = la::Rotate(s,(k*omega+B_meas)*interval);
+	}
 
 	if (model==naiv)
 	{
@@ -67,7 +92,6 @@ void SingleSpin::Step()
 		boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(2);
 		k = RandUnitVec(gen);
 		k.reshape(3,1);
-
 	}
 
 	t += interval;
@@ -146,21 +170,34 @@ int SingleSpin::binary_search_t(const double &t)
 
 void SingleSpin::FillSzVec(std::vector<double>& Sz, const int& size, const double& dt)
 {
-	while (GetLastTime() < (size-1)*dt)
+	while (GetLastTime() < tmin+(size-1)*dt)
 		Step();
 	int ind=0;
 	double next_t=times[ind+1];
 	for(int i=0; i<size; i++)
 	{
-		while (i*dt>next_t)
+		while (tmin+i*dt>next_t)
 		{
 			ind++;
 			next_t=times[ind+1];
 		}
-		double interval = i*dt - times[ind];
+		double interval = tmin+i*dt - times[ind];
 		arma::vec s=spins[ind];
 		arma::vec k=kvecs[ind];
-		s = la::Rotate(s,k*omega*interval);
+		if (times[ind]<0)
+		{
+			if (times[ind]+interval<0)
+				s= la::Rotate(s,k*omega*interval);
+			else
+			{
+				s= la::Rotate(s,k*omega*(-times[ind]));
+				s= la::Rotate(s,(k*omega+B_meas)*(interval+times[ind]));
+			}
+		}
+		else
+		{
+			s  = la::Rotate(s,(k*omega+B_meas)*interval);
+		}
 		if (model==naiv || model==burkov_2d)
 			Sz[i] += s[2];
 		else if (model==burkov_2d_Sx)

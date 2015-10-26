@@ -4,7 +4,7 @@
 
 namespace la
 {
-	arma::vec Rotate(arma::vec v0,arma::vec phi);
+	arma::vec Rotate(const arma::vec& v0,const arma::vec& phi);
 }
 
 #endif

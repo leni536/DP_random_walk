@@ -27,6 +27,9 @@ int main(int argc, char* argv[])
 	    ("seed"	, po::value<string>()	-> default_value("rand"), "set the seed for the random generator")
 	    ("output,o"	, po::value<string>()	-> default_value("-")	, "output file path")
 	    ("model,m"	, po::value<string>()	-> default_value("naiv"), "name of the model")
+	    ("meas"	, po::value<string>()	-> default_value("prep"), "name of measurement method")
+	    ("B_meas,b" , po::value<double>()	-> default_value(0.)	, "measurement field")
+	    ("tmin"	, po::value<double>()	-> default_value(0.)	, "starting time, B_meas turns in at t=0")
 	;
 	po::positional_options_description pos_desc;
 	pos_desc.add("output",-1);
@@ -55,6 +58,9 @@ int main(int argc, char* argv[])
 	string seed	= vm["seed"].as<string>();
 	string fname	= vm["output"].as<string>();
 	string model_str= vm["model"].as<string>();
+	string meas_str = vm["meas"].as<string>();
+	double B_meas	= vm["B_meas"].as<double>();
+	double tmin	= vm["tmin"].as<double>();
 
 	//setting the model param
 	SingleSpin::model_t model;
@@ -64,6 +70,15 @@ int main(int argc, char* argv[])
 	else 
 	{
 		cerr << "Unknown model name: " << model_str << endl;
+		return 2;
+	}
+
+	SingleSpin::meas_t meas;
+	if (meas_str=="prep") meas=SingleSpin::prep;
+	else if (meas_str=="B_shot") meas=SingleSpin::B_shot;
+	else
+	{
+		cerr << "Unknown measurement name: " << meas_str << endl;
 		return 2;
 	}
 
@@ -104,7 +119,7 @@ int main(int argc, char* argv[])
 	s=new SingleSpin;
 	for(int i=0;i<n_spins;i++)
 	{
-		s=new SingleSpin(omega,model);
+		s=new SingleSpin(omega,model,meas,B_meas,tmin);
 		s->FillSzVec(sz,size,timestep);
 		delete s;
 	}
@@ -117,14 +132,18 @@ int main(int argc, char* argv[])
 	*out << "#  duration: " << duration << endl;
 	*out << "#  timestep: " << timestep << endl;
 	*out << "#  omega: " << omega << endl;
-	*out << "#  seed: " << seed << endl;
+	*out << "#  seed: " << seed_int << endl;
 	*out << "#  model: " << model_str << endl;
+	*out << "#  meas: " << meas_str << endl;
+	*out << "#  B_meas: " << B_meas << endl;
+	*out << "#  tmin: " << tmin << endl;
 	*out << "# t, Sz" << endl;
 	for(int i=0;i<size;i++)
 	{
-		*out 	<< i*timestep
+		*out 	<< tmin+i*timestep
 			<< ", " 
-			<< ((i==0) ? 1. :  sz[i]/(double)n_spins )
+			//<< ((i==0) ? 1. :  sz[i]/(double)n_spins )
+			<< sz[i]/(double)n_spins
 			<< endl;
 	}
 	delete file;

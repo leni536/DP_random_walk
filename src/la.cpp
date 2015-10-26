@@ -6,7 +6,7 @@ namespace la
 {
 using namespace arma;
 
-vec Rotate(vec v0, vec phi)
+vec Rotate(const vec& v0,const vec& phi)
 {
 	double phi_scal=norm(phi,2);
 	vec dir=phi/phi_scal;
