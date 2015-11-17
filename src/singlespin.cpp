@@ -247,6 +247,13 @@ void SingleSpinAutocorr::Step()
 		else
 			buf.push(s[0]);
 	}
+	// !!! dirty hack !!!
+	if (spins.size()>1000)
+	{
+		spins=std::vector<arma::vec>(spins.end()-2,spins.end());
+		kvecs=std::vector<arma::vec>(kvecs.end()-2,kvecs.end());
+		times=std::vector<double>(times.end()-2,times.end());
+	}
 }
 
 std::unique_ptr<std::vector<double>> SingleSpinAutocorr::GetAutocorr()
