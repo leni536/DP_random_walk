@@ -204,3 +204,52 @@ void SingleSpin::FillSzVec(std::vector<double>& Sz, const int& size, const doubl
 			Sz[i] += s[0];
 	}
 }
+
+//***************************
+//* SingleSpinAutocorr
+
+SingleSpinAutocorr::SingleSpinAutocorr(const double& o,
+	   const model_t& m,
+	   const meas_t& meas,
+	   double B_meas,
+	   double tmin,
+	   double dt,
+	   unsigned int N
+	   ): SingleSpin(o,m,meas,B_meas,tmin), buf(N), dt(dt)
+{
+}
+
+void SingleSpinAutocorr::Step()
+{
+	SingleSpin::Step();
+	while(tmin+buf.get_eff_size()*dt < times.back() )
+	{
+		double t=times.end()[-2];
+		double interval=tmin+buf.get_eff_size()*dt-t;
+		arma::vec s=spins.end()[-2];
+		arma::vec k=kvecs.end()[-2];
+		if (t<0)
+		{
+			if (t+interval<0)
+				s= la::Rotate(s,k*omega*interval);
+			else
+			{
+				s= la::Rotate(s,k*omega*(-t));
+				s= la::Rotate(s,(k*omega+B_meas)*(interval+t));
+			}
+		}
+		else
+		{
+			s  = la::Rotate(s,(k*omega+B_meas)*interval);
+		}
+		if (model==naiv || model==burkov_2d)
+			buf.push(s[2]);
+		else
+			buf.push(s[0]);
+	}
+}
+
+std::unique_ptr<std::vector<double>> SingleSpinAutocorr::GetAutocorr()
+{
+	return std::move(buf.get_autocorr());
+}

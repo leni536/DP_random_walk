@@ -20,6 +20,7 @@ int main(int argc, char* argv[])
 	desc.add_options()
 	    ("help,h"							, "produce help message")
 	    ("version,v"						, "print version number")
+            ("autocorr"                                                 , "set autocorr measurement")
 	    ("spins"	, po::value<int>()	-> default_value(10)	, "set number of spins")
 	    ("duration"	, po::value<double>()	-> default_value(300)	, "set simulation duration")
 	    ("timestep"	, po::value<double>()	-> default_value(1)	, "set timestep")
@@ -51,6 +52,7 @@ int main(int argc, char* argv[])
 	}
 
 	//Parsed option values
+        bool autocorr   = vm.count("autocorr");
 	int n_spins	= vm["spins"].as<int>();
 	double duration	= vm["duration"].as<double>();
 	double timestep	= vm["timestep"].as<double>();
@@ -113,39 +115,72 @@ int main(int argc, char* argv[])
 	randgen::gen::Instance(seed_int);
 
 	//Run simulation
-	SingleSpin * s;
-	vector<double> sz(size,0.);
+        if (!autocorr)
+        {
+	        SingleSpin * s;
+	        vector<double> sz(size,0.);
 
-	s=new SingleSpin;
-	for(int i=0;i<n_spins;i++)
-	{
-		s=new SingleSpin(omega,model,meas,B_meas,tmin);
-		s->FillSzVec(sz,size,timestep);
-		delete s;
-	}
+	        for(int i=0;i<n_spins;i++)
+	        {
+	        	s=new SingleSpin(omega,model,meas,B_meas,tmin);
+	        	s->FillSzVec(sz,size,timestep);
+	        	delete s;
+	        }
 
-	//Output
-	*out << "# Djakonov-Perel simulation" << endl;
-	*out << "# t=0 Sz=1, no magnetic field" << endl;
-	*out << "#  version: " << VERSION << endl;
-	*out << "#  spins: " << n_spins << endl;
-	*out << "#  duration: " << duration << endl;
-	*out << "#  timestep: " << timestep << endl;
-	*out << "#  omega: " << omega << endl;
-	*out << "#  seed: " << seed_int << endl;
-	*out << "#  model: " << model_str << endl;
-	*out << "#  meas: " << meas_str << endl;
-	*out << "#  B_meas: " << B_meas << endl;
-	*out << "#  tmin: " << tmin << endl;
-	*out << "# t, Sz" << endl;
-	for(int i=0;i<size;i++)
+	        //Output
+	        *out << "# Djakonov-Perel simulation" << endl;
+	        *out << "# t=0 Sz=1, no magnetic field" << endl;
+	        *out << "#  version: " << VERSION << endl;
+	        *out << "#  spins: " << n_spins << endl;
+	        *out << "#  duration: " << duration << endl;
+	        *out << "#  timestep: " << timestep << endl;
+	        *out << "#  omega: " << omega << endl;
+	        *out << "#  seed: " << seed_int << endl;
+	        *out << "#  model: " << model_str << endl;
+	        *out << "#  meas: " << meas_str << endl;
+	        *out << "#  B_meas: " << B_meas << endl;
+	        *out << "#  tmin: " << tmin << endl;
+		*out << "#  autocorr: false" << endl;
+	        *out << "# t, Sz" << endl;
+	        for(int i=0;i<size;i++)
+	        {
+	        	*out 	<< tmin+i*timestep
+	        		<< ", " 
+	        		//<< ((i==0) ? 1. :  sz[i]/(double)n_spins )
+	        		<< sz[i]/(double)n_spins
+	        		<< endl;
+	        }
+        }
+	else
 	{
-		*out 	<< tmin+i*timestep
-			<< ", " 
-			//<< ((i==0) ? 1. :  sz[i]/(double)n_spins )
-			<< sz[i]/(double)n_spins
+		SingleSpinAutocorr s(omega,model,meas,B_meas,tmin,timestep,size);
+		while(s.GetLastTime()<tmin+duration*n_spins)
+			s.Step();
+		auto vautocorr=s.GetAutocorr();
+	        *out << "# Djakonov-Perel simulation" << endl;
+	        *out << "# t=0 Sz=1, no magnetic field" << endl;
+	        *out << "#  version: " << VERSION << endl;
+	        *out << "#  spins: " << n_spins << endl;
+	        *out << "#  duration: " << duration << endl;
+	        *out << "#  timestep: " << timestep << endl;
+	        *out << "#  omega: " << omega << endl;
+	        *out << "#  seed: " << seed_int << endl;
+	        *out << "#  model: " << model_str << endl;
+	        *out << "#  meas: " << meas_str << endl;
+	        *out << "#  B_meas: " << B_meas << endl;
+	        *out << "#  tmin: " << tmin << endl;
+		*out << "#  autocorr: true" << endl;
+	        *out << "# t, Sz" << endl;
+
+		for(int i=0;i<size;i++)
+		{
+			*out << i*timestep
+			<< ", "
+			<< (*vautocorr)[i]
 			<< endl;
+		}
 	}
-	delete file;
+	if (file!=nullptr) 
+            delete file;
 	return 0;
 }
