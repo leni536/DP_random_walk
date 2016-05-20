@@ -15,42 +15,68 @@ SingleSpin::SingleSpin(const double& o,const model_t& m,const meas_t& meas,doubl
 	// t0=0
 	times.push_back(tmin);
 
-	if (model==naiv || model==burkov_2d)
-		B_meas << 0 << 0 << B_m ;
-	else if (model==burkov_2d_Sx)
-		B_meas << B_m << 0 << 0 ;
+	// External magnetic field
+	switch (model) {
+		case naiv:
+		case burkov_2d:
+		case rashba_3d:
+			B_meas << 0 << 0 << B_m;
+		case burkov_2d_Sx:
+			B_meas << B_m << 0 << 0;
+	}
 
 	// s_z=1
 	arma::vec init;
 
-	if (meas==prep)
-	{
-		if (model==naiv || model==burkov_2d)
-			init << 0 << 0 << 1 ;
-		else if (model==burkov_2d_Sx)
-			init << 1 << 0 << 0 ;
-	}
-	else if (meas==B_shot)
-	{
-		boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
-		init=RandUnitVec(gen);
+	// Initial spin direction
+	switch (meas) {
+		case prep:
+			switch (model) {
+				case naiv:
+				case burkov_2d:
+				case rashba_3d:
+					init << 0 << 0 << 1;
+					break;
+				case burkov_2d_Sx:
+					init << 1 << 0 << 0;
+					break;
+			}
+			break;
+		case B_shot:
+			boost::random::uniform_on_sphere<double, arma::vec>
+			    RandUnitVec(3);
+			init = RandUnitVec(gen);
+			break;
 	}
 	spins.push_back(init);
 
-
-	if (model==naiv)
-	{
-		// 3D model, k vectors are from the unit sphere
-		boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
-		kvecs.push_back(RandUnitVec(gen));
-	}
-	else if (model==burkov_2d || model==burkov_2d_Sx)
-	{
-		// 2D model, k vectors are from the unit circle, however we treat them as 3D vectors.
-		boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(2);
-		arma::vec temp=RandUnitVec(gen);
-		temp.reshape(3,1);
-		kvecs.push_back(temp);
+	// initial k vector
+	switch (model) {
+		case naiv: {
+			// 3D model, k vectors are from the unit sphere
+			boost::random::uniform_on_sphere<double, arma::vec>
+			    RandUnitVec(3);
+			kvecs.push_back(RandUnitVec(gen));
+			break;
+		}
+		case burkov_2d:
+		case burkov_2d_Sx: {
+			// 2D model, k vectors are from the unit circle, however
+			// we treat them as 3D vectors.
+			boost::random::uniform_on_sphere<double, arma::vec>
+			    RandUnitVec(2);
+			arma::vec temp = RandUnitVec(gen);
+			temp.reshape(3, 1);
+			kvecs.push_back(temp);
+			break;
+		}
+		case rashba_3d: {
+			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
+			arma::vec temp = RandUnitVec(gen);
+			temp[3] = 0;
+			kvecs.push_back(temp);
+			break;
+		}
 	}
 }
 
@@ -83,16 +109,28 @@ void SingleSpin::Step()
 		s  = la::Rotate(s,(k*omega+B_meas)*interval);
 	}
 
-	if (model==naiv)
-	{
-		boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
-		k = RandUnitVec(gen);
-	}
-	else if (model==burkov_2d || model==burkov_2d_Sx)
-	{
-		boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(2);
-		k = RandUnitVec(gen);
-		k.reshape(3,1);
+	switch (model) {
+		case naiv: {
+			boost::random::uniform_on_sphere<double, arma::vec>
+			    RandUnitVec(3);
+			k = RandUnitVec(gen);
+			break;
+		}
+		case burkov_2d:
+		case burkov_2d_Sx: {
+			boost::random::uniform_on_sphere<double, arma::vec>
+			    RandUnitVec(2);
+			k = RandUnitVec(gen);
+			k.reshape(3, 1);
+			break;
+		}
+		case rashba_3d: {
+			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
+			arma::vec temp = RandUnitVec(gen);
+			temp[3] = 0;
+			kvecs.push_back(temp);
+			break;
+		}
 	}
 
 	t += interval;
@@ -201,10 +239,16 @@ void SingleSpin::FillSzVec(std::vector<double>& Sz, const int& size, const doubl
 		{
 			s  = la::Rotate(s,(k*omega+B_meas)*interval);
 		}
-		if (model==naiv || model==burkov_2d)
-			Sz[i] += s[2];
-		else if (model==burkov_2d_Sx)
-			Sz[i] += s[0];
+		switch (model) {
+			case naiv:
+			case burkov_2d:
+			case rashba_3d:
+				Sz[i] += s[2];
+				break;
+			case burkov_2d_Sx:
+				Sz[i] += s[0];
+				break;
+		}
 	}
 }
 
@@ -245,10 +289,16 @@ void SingleSpinAutocorr::Step()
 		{
 			s  = la::Rotate(s,(k*omega+B_meas)*interval);
 		}
-		if (model==naiv || model==burkov_2d)
+		switch (model) {
+			case naiv:
+			case burkov_2d:
+			case rashba_3d:
 			buf.push(s[2]);
-		else
+			break;
+			case burkov_2d_Sx:
 			buf.push(s[0]);
+			break;
+		}
 	}
 	// !!! dirty hack !!!
 	if (spins.size()>1000)
