@@ -126,9 +126,8 @@ void SingleSpin::Step()
 		}
 		case rashba_3d: {
 			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
-			arma::vec temp = RandUnitVec(gen);
-			temp[3] = 0;
-			kvecs.push_back(temp);
+			k = RandUnitVec(gen);
+			k[3] = 0;
 			break;
 		}
 	}
