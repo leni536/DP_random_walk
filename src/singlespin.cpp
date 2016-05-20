@@ -5,8 +5,9 @@
 #include <armadillo>
 #include <vector>
 #include <iostream>
+#include <exception>
 
-SingleSpin::SingleSpin(const double& o,const model_t& m,const meas_t& meas,double B_m,double tmin) : omega(o), model(m), meas(meas), tmin(tmin)
+SingleSpin::SingleSpin(const double& o,const model_t& m,const meas_t& meas,double B_m,double tmin) : model(m), meas(meas), tmin(tmin), omega(o)
 {
 // Initial conditions
 	randgen::pseudogen& gen=randgen::gen::Instance()->getGen();
@@ -103,7 +104,7 @@ void SingleSpin::Step()
 
 void SingleSpin::Print(std::ostream& out)
 {
-	for(int i=0; i<spins.size(); i++)
+	for(size_t i=0; i<spins.size(); i++)
 	{
 		out << "t= " << times[i] << " s" << std::endl;
 		spins[i].print(out, "s:");
@@ -114,7 +115,7 @@ void SingleSpin::Print(std::ostream& out)
 
 void SingleSpin::RawPrint(std::ostream& out)
 {
-	for(int i=0; i<spins.size(); i++)
+	for(size_t i=0; i<spins.size(); i++)
 	{
 		out << times[i] << ", ";
 		for(int j=0;j<3;j++)
@@ -141,8 +142,10 @@ int SingleSpin::binary_search_t(const double &t)
 	double t1=times.front();
 	double t2=times.back();
 
-	//halt if t is not in range
-	assert(t>t1 && t<t2);
+	//throw if t is not in range
+	if (t < t1 || t > t2) {
+		throw std::runtime_error("Time is not in range");
+	}
 
 	double size=times.size();
 	double rmin=0;

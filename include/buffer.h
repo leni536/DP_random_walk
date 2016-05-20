@@ -31,8 +31,6 @@ T& buffer<T>::operator[](size_t idx)
 	if ( eff_size >= size )
 		if ( idx < eff_size-size )
 			throw std::out_of_range("Buffer under-index");
-	if ( idx < 0 )
-		throw std::out_of_range("Buffer under-index");
 
 	return container[idx % size];
 }

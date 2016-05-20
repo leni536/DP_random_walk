@@ -14,7 +14,7 @@ autocorr::autocorr(size_t size):
 void autocorr::push(const double& item)
 {
 	buffer<double>::push(item);
-	for(int i=0; i<std::min(this->get_size(),this->get_eff_size()); i++)
+	for(size_t i=0; i<std::min(this->get_size(),this->get_eff_size()); i++)
 	{
 		autocorrsum[i]+=(*this)[this->get_eff_size()-1]*(*this)[this->get_eff_size()-1-i];
 		autocorrcount[i]++;
@@ -24,7 +24,7 @@ void autocorr::push(const double& item)
 std::unique_ptr<std::vector<double> > autocorr::get_autocorr()
 {
 	std::unique_ptr<std::vector<double> > vec_ptr(new std::vector<double>(this->get_size()));
-	for(int i=0; i<this->get_size(); i++)
+	for(size_t i=0; i<this->get_size(); i++)
 	{
 		if (autocorrcount[i]>0)
 			(*vec_ptr)[i]=autocorrsum[i]/autocorrcount[i];
