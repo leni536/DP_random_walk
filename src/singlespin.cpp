@@ -73,7 +73,7 @@ SingleSpin::SingleSpin(const double& o,const model_t& m,const meas_t& meas,doubl
 		case rashba_3d: {
 			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
 			arma::vec temp = RandUnitVec(gen);
-			temp[3] = 0;
+			temp[2] = 0;
 			kvecs.push_back(temp);
 			break;
 		}
@@ -127,7 +127,7 @@ void SingleSpin::Step()
 		case rashba_3d: {
 			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
 			k = RandUnitVec(gen);
-			k[3] = 0;
+			k[2] = 0;
 			break;
 		}
 	}
