@@ -25,6 +25,7 @@ int main(int argc, char* argv[])
 	    ("duration"	, po::value<double>()	-> default_value(300)	, "set simulation duration")
 	    ("timestep"	, po::value<double>()	-> default_value(1)	, "set timestep")
 	    ("omega"	, po::value<double>()	-> default_value(0.2)	, "set the absolute value of Larmor precession")
+	    ("delta_omega", po::value<double>()	-> default_value(0.)	, "set the width of omega distribution")
 	    ("seed"	, po::value<string>()	-> default_value("rand"), "set the seed for the random generator")
 	    ("output,o"	, po::value<string>()	-> default_value("-")	, "output file path")
 	    ("model,m"	, po::value<string>()	-> default_value("naiv"), "name of the model")
@@ -57,6 +58,7 @@ int main(int argc, char* argv[])
 	double duration	= vm["duration"].as<double>();
 	double timestep	= vm["timestep"].as<double>();
 	double omega	= vm["omega"].as<double>();
+	double delta_omega = vm["delta_omega"].as<double>();
 	string seed	= vm["seed"].as<string>();
 	string fname	= vm["output"].as<string>();
 	string model_str= vm["model"].as<string>();
@@ -70,6 +72,7 @@ int main(int argc, char* argv[])
 	else if (model_str=="burkov_2d") model=SingleSpin::burkov_2d;
 	else if (model_str=="burkov_2d_Sx") model=SingleSpin::burkov_2d_Sx;
 	else if (model_str=="rashba_3d") model=SingleSpin::rashba_3d;
+	else if (model_str=="mixed_3d") model=SingleSpin::mixed_3d;
 	else 
 	{
 		cerr << "Unknown model name: " << model_str << endl;
@@ -123,7 +126,7 @@ int main(int argc, char* argv[])
 
 	        for(int i=0;i<n_spins;i++)
 	        {
-	        	s=new SingleSpin(omega,model,meas,B_meas,tmin);
+	        	s=new SingleSpin(omega,delta_omega,model,meas,B_meas,tmin);
 	        	s->FillSzVec(sz,size,timestep);
 	        	delete s;
 	        }
@@ -154,7 +157,7 @@ int main(int argc, char* argv[])
         }
 	else
 	{
-		SingleSpinAutocorr s(omega,model,meas,B_meas,tmin,timestep,size);
+		SingleSpinAutocorr s(omega,delta_omega,model,meas,B_meas,tmin,timestep,size);
 		while(s.GetLastTime()<tmin+duration*n_spins)
 			s.Step();
 		auto vautocorr=s.GetAutocorr();

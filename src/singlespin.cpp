@@ -7,8 +7,9 @@
 #include <iostream>
 #include <exception>
 
-SingleSpin::SingleSpin(const double& o,const model_t& m,const meas_t& meas,double B_m,double tmin) : model(m), meas(meas), tmin(tmin), omega(o)
-{
+SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, const meas_t& meas,
+		       double B_m, double tmin)
+    : model(m), meas(meas), tmin(tmin), omega(o), delta_omega(deltao){
 // Initial conditions
 	randgen::pseudogen& gen=randgen::gen::Instance()->getGen();
 
@@ -20,9 +21,12 @@ SingleSpin::SingleSpin(const double& o,const model_t& m,const meas_t& meas,doubl
 		case naiv:
 		case burkov_2d:
 		case rashba_3d:
+		case mixed_3d:
 			B_meas << 0 << 0 << B_m;
+			break;
 		case burkov_2d_Sx:
 			B_meas << B_m << 0 << 0;
+			break;
 	}
 
 	// s_z=1
@@ -35,6 +39,7 @@ SingleSpin::SingleSpin(const double& o,const model_t& m,const meas_t& meas,doubl
 				case naiv:
 				case burkov_2d:
 				case rashba_3d:
+				case mixed_3d:
 					init << 0 << 0 << 1;
 					break;
 				case burkov_2d_Sx:
@@ -75,6 +80,14 @@ SingleSpin::SingleSpin(const double& o,const model_t& m,const meas_t& meas,doubl
 			arma::vec temp = RandUnitVec(gen);
 			temp[2] = 0;
 			kvecs.push_back(temp);
+			break;
+		}
+		case mixed_3d: {
+			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
+			arma::vec t1 = RandUnitVec(gen);
+			t1[2] = 0;
+			arma::vec t2 = RandUnitVec(gen);
+			kvecs.push_back(t2+(delta_omega/omega)*t1);
 			break;
 		}
 	}
@@ -128,6 +141,14 @@ void SingleSpin::Step()
 			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
 			k = RandUnitVec(gen);
 			k[2] = 0;
+			break;
+		}
+		case mixed_3d: {
+			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
+			arma::vec t1 = RandUnitVec(gen);
+			t1[2] = 0;
+			arma::vec t2 = RandUnitVec(gen);
+			k = t2 + (delta_omega/omega)*t1;
 			break;
 		}
 	}
@@ -242,6 +263,7 @@ void SingleSpin::FillSzVec(std::vector<double>& Sz, const int& size, const doubl
 			case naiv:
 			case burkov_2d:
 			case rashba_3d:
+			case mixed_3d:
 				Sz[i] += s[2];
 				break;
 			case burkov_2d_Sx:
@@ -255,13 +277,14 @@ void SingleSpin::FillSzVec(std::vector<double>& Sz, const int& size, const doubl
 //* SingleSpinAutocorr
 
 SingleSpinAutocorr::SingleSpinAutocorr(const double& o,
+	   const double& deltao,
 	   const model_t& m,
 	   const meas_t& meas,
 	   double B_meas,
 	   double tmin,
 	   double dt,
 	   unsigned int N
-	   ): SingleSpin(o,m,meas,B_meas,tmin), buf(N), dt(dt)
+	   ): SingleSpin(o,deltao,m,meas,B_meas,tmin), buf(N), dt(dt)
 {
 }
 
@@ -292,6 +315,7 @@ void SingleSpinAutocorr::Step()
 			case naiv:
 			case burkov_2d:
 			case rashba_3d:
+			case mixed_3d:
 			buf.push(s[2]);
 			break;
 			case burkov_2d_Sx:
