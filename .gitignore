@@ -4,3 +4,9 @@ tests/*
 dep/*
 include/version.h
 !.gitkeep
+
+/include/mathlink.h
+/mathlink/mathlink
+/mathlink/mathlink.o
+/mathlink/mathlink_template.o
+/mathlink/mathlink_template.c

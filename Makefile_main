@@ -21,6 +21,20 @@ ${BINDIR}/% : ${BUILDDIR}/target/%.o ${LIB_OBJECTS}
 ${TESTSDIR}/% : ${BUILDDIR}/tests/%.o ${LIB_OBJECTS}
 	${CC} ${LIB} $^ -o $@
 
+# mathlink related
+mathlink/mathlink_template.c : mathlink/mathlink.tm
+	mprep $< -o $@
+
+mathlink/mathlink_template.o : mathlink/mathlink_template.c
+	${CC} -c ${INC} ${CFLAGS} $< -o $@
+
+mathlink/mathlink.o : mathlink/mathlink.cpp
+	${CC} -c ${INC} ${CFLAGS} $< -o $@
+
+mathlink/mathlink : mathlink/mathlink.o mathlink/mathlink_template.o ${LIB_OBJECTS}
+	${CC} ${LIB} -L /home/lenard/Mathematica/10.0/SystemFiles/Links/MathLink/DeveloperKit/Linux-x86-64/CompilerAdditions/ -lML64i4 -lpthread -ldl -lrt -luuid $^ -o $@
+
+
 include ${DEPENDS}
 
 ${BUILDDIR}/%.o: ${SRCDIR}/%.${SRCEXT}

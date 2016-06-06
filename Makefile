@@ -9,6 +9,8 @@ tests: ${DEPENDS}
 	@make -f Makefile_main tests
 all: ${DEPENDS}
 	@make -f Makefile_main all
+mathlink: ${DEPENDS} mathlink/mathlink.tm mathlink/mathlink.cpp
+	@make -f Makefile_main mathlink/mathlink
 clean:
 	rm -rf ${BUILDDIR}/*	\
 	       ${BINDIR}/*	\
