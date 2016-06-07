@@ -22,6 +22,7 @@ void simulation(
 		double DeltaOmega,
 		char const* ModelString,
 		char const* MeasurementString,
+		char const* AutocorrString,
 		double MagneticField,
 		double Tmin,
 		double Duration,
@@ -50,29 +51,52 @@ void simulation(
 		return ;
 	}
 
+	bool autocorr=false;
+	if (std::string(AutocorrString)=="autocorr") autocorr=true;
+
 	//Set dataset size
 	int size=Duration/Timestep;
 
 	SingleSpin * s;
 	std::vector<double> sz(size,0.);
 
-	for(int i=0;i<SpinNumber;i++)
-	{
-		s=new SingleSpin(Omega,DeltaOmega,model,meas,MagneticField,Tmin);
-		s->FillSzVec(sz,size,Timestep);
-		delete s;
-	}
+        if (!autocorr)
+        {
+		for(int i=0;i<SpinNumber;i++)
+		{
+			s=new SingleSpin(Omega,DeltaOmega,model,meas,MagneticField,Tmin);
+			s->FillSzVec(sz,size,Timestep);
+			delete s;
+		}
 
-	std::vector<double> ret(2*size);
+		std::vector<double> ret(2*size);
 
-	for(int i=0;i<size;i++)
-	{
-		ret[i] = i*Timestep;
-		ret[i+size] = sz[i]/(double)SpinNumber;
+		for(int i=0;i<size;i++)
+		{
+			ret[i] = i*Timestep;
+			ret[i+size] = sz[i]/(double)SpinNumber;
+		}
+		const int dims[]={2,size};
+		MLPutReal64Array(stdlink,ret.data(),dims,(const char **)nullptr,2);
+
+		return;
+	} else {
+		SingleSpinAutocorr s(Omega, DeltaOmega, model, meas, meas, Tmin,
+				     Timestep, size);
+		while (s.GetLastTime() < Tmin + Duration * SpinNumber) s.Step();
+		auto vautocorr = s.GetAutocorr();
+
+		std::vector<double> ret(2 * size);
+		for (int i = 0; i < size; i++) {
+			ret[i] = i * Timestep;
+			ret[i + size] = (*vautocorr)[i];
+		}
+		const int dims[] = {2, size};
+		MLPutReal64Array(stdlink, ret.data(), dims,
+				 (const char**)nullptr, 2);
+
+		return;
 	}
-	const int dims[]={2,size};
-	MLPutReal64Array(stdlink,ret.data(),dims,(const char **)nullptr,2);
-	return;
 }
 
 int main(int argc, char* argv[]) {
