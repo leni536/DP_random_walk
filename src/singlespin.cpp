@@ -84,10 +84,10 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 		}
 		case mixed_3d: {
 			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
-			arma::vec t1 = RandUnitVec(gen);
-			t1[2] = 0;
-			arma::vec t2 = RandUnitVec(gen);
-			kvecs.push_back(t2+(delta_omega/omega)*t1);
+			arma::vec o1 = RandUnitVec(gen);
+			arma::vec o2 = la::Rotate( o1, {0,0,atan(1)*2} );
+			o2[2]=0.;
+			kvecs.push_back(o1+(delta_omega/omega)*o2);
 			break;
 		}
 	}
@@ -145,10 +145,10 @@ void SingleSpin::Step()
 		}
 		case mixed_3d: {
 			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
-			arma::vec t1 = RandUnitVec(gen);
-			t1[2] = 0;
-			arma::vec t2 = RandUnitVec(gen);
-			k = t2 + (delta_omega/omega)*t1;
+			arma::vec o1 = RandUnitVec(gen);
+			arma::vec o2 = la::Rotate( o1, {0,0,atan(1)*2} );
+			o2[2]=0.;
+			k = o1 + (delta_omega/omega)*o2;
 			break;
 		}
 	}

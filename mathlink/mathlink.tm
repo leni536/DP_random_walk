@@ -13,3 +13,11 @@
 :ArgumentTypes:	{Real,Real,String,String,String,Real,Real,Real,Real,Integer}
 :ReturnType:	Manual
 :End:
+
+:Begin:
+:Function:	setProgress
+:Pattern:	setProgress[Dynamic[sym_Symbol]]
+:Arguments:	{sym}
+:ArgumentTypes:	{Manual}
+:ReturnType:	Manual
+:End:

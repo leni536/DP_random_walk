@@ -1,5 +1,7 @@
 #include <cmath>
 #include <string>
+#include <cstring>
+#include <sstream>
 #include <vector>
 #include <boost/random.hpp>
 #include <boost/random/random_device.hpp>
@@ -11,9 +13,42 @@
 
 using namespace std::string_literals;
 
+struct Progress {
+	std::string Mathematica_variable;
+	double progress;
+	void MLSend(MLINK lp);
+};
+
+void Progress::MLSend(MLINK lp) {
+	if (Mathematica_variable != "") {
+		std::ostringstream sstream;
+		sstream << progress;
+		std::string expr_str =
+		    (Mathematica_variable + "=" + sstream.str());
+		char* expr = new char[expr_str.size() + 1];
+		strcpy(expr, expr_str.c_str());
+		MLEvaluateString(lp, expr);
+		delete[] expr;
+	}
+}
+
+Progress prog={"",0.};
+
 void test(int j) { 
 	std::vector<double> v={1.,2.,3.,4.,(double)j};
 	MLPutReal64List(stdlink,v.data(),v.size());
+	return;
+}
+
+void setProgress() {
+	const char * s;
+	if ( !MLGetSymbol(stdlink,&s) ) {
+		MLPutSymbol(stdlink,"$Failed");
+		return;
+	}
+	prog.Mathematica_variable=s;
+	MLReleaseSymbol(stdlink,s);
+	MLPutSymbol(stdlink,"Null");
 	return;
 }
 
@@ -38,7 +73,7 @@ void simulation(
 	else if (std::string(ModelString)=="mixed_3d") model=SingleSpin::mixed_3d;
 	else 
 	{
-		MLPutString(stdlink,"Faszom");
+		MLPutSymbol(stdlink,"$Failed");
 		return ;
 	}
 
@@ -47,7 +82,7 @@ void simulation(
 	else if (std::string(MeasurementString)=="B_shot") meas=SingleSpin::B_shot;
 	else
 	{
-		MLPutString(stdlink,"Anyad");
+		MLPutSymbol(stdlink,"$Failed");
 		return ;
 	}
 
@@ -67,6 +102,12 @@ void simulation(
 			s=new SingleSpin(Omega,DeltaOmega,model,meas,MagneticField,Tmin);
 			s->FillSzVec(sz,size,Timestep);
 			delete s;
+			prog.progress=(double)(i+1)/SpinNumber;
+			prog.MLSend(stdlink);
+			if (MLAbort) {
+				MLPutSymbol(stdlink,"$Aborted");
+				return;
+			}
 		}
 
 		std::vector<double> ret(2*size);
@@ -83,7 +124,20 @@ void simulation(
 	} else {
 		SingleSpinAutocorr s(Omega, DeltaOmega, model, meas, meas, Tmin,
 				     Timestep, size);
-		while (s.GetLastTime() < Tmin + Duration * SpinNumber) s.Step();
+		int counter=0;
+		while (s.GetLastTime() < Tmin + Duration * SpinNumber) {
+			s.Step();
+			if (counter % size == 0) {
+				prog.progress = (s.GetLastTime() - Tmin) /
+						(Duration * SpinNumber);
+				prog.MLSend(stdlink);
+			}
+			if (MLAbort) {
+				MLPutSymbol(stdlink,"$Aborted");
+				return;
+			}
+			counter++;
+		}
 		auto vautocorr = s.GetAutocorr();
 
 		std::vector<double> ret(2 * size);
