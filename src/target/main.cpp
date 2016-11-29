@@ -73,6 +73,7 @@ int main(int argc, char* argv[])
 	else if (model_str=="burkov_2d_Sx") model=SingleSpin::burkov_2d_Sx;
 	else if (model_str=="rashba_3d") model=SingleSpin::rashba_3d;
 	else if (model_str=="mixed_3d") model=SingleSpin::mixed_3d;
+	else if (model_str=="mn_1d") model=SingleSpin::mn_1d;
 	else 
 	{
 		cerr << "Unknown model name: " << model_str << endl;

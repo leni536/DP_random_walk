@@ -9,7 +9,7 @@
 
 class SingleSpin {
 	public:
-		enum model_t {naiv,burkov_2d,burkov_2d_Sx,rashba_3d,mixed_3d};
+		enum model_t {naiv,burkov_2d,burkov_2d_Sx,rashba_3d,mixed_3d,mn_1d};
 		enum meas_t  {prep,B_shot};
 	protected:
 		model_t model;
