@@ -95,7 +95,7 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 		case mn_1d: {
 			boost::random::bernoulli_distribution<double> Bernoulli(.5);
 			bool res = Bernoulli(gen);
-			arma::vec k = { (res) ? (omega) : (-omega) , 0. , 0. };
+			arma::vec k = { (res) ? (1) : (-1) , 0. , 0. };
 			kvecs.push_back(k);
 			break;
 		}
@@ -163,7 +163,7 @@ void SingleSpin::Step()
 		case mn_1d: {
 			boost::random::bernoulli_distribution<double> Bernoulli(.5);
 			bool res = Bernoulli(gen);
-			k = { (res) ? (omega) : (-omega) , 0. , 0. };
+			k = { (res) ? (1) : (-1) , 0. , 0. };
 			break;
 		}
 	}
