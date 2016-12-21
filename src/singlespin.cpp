@@ -23,6 +23,7 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 		case rashba_3d:
 		case mixed_3d:
 		case mn_1d:
+		case dresselhaus:
 			B_meas << 0 << 0 << B_m;
 			break;
 		case burkov_2d_Sx:
@@ -42,6 +43,7 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 				case rashba_3d:
 				case mixed_3d:
 				case mn_1d:
+				case dresselhaus:
 					init << 0 << 0 << 1;
 					break;
 				case burkov_2d_Sx:
@@ -96,6 +98,17 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 			boost::random::bernoulli_distribution<double> Bernoulli(.5);
 			bool res = Bernoulli(gen);
 			arma::vec k = { (res) ? (1.) : (-1.) , 0. , 0. };
+			kvecs.push_back(k);
+			break;
+		}
+		case dresselhaus: {
+			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
+			arma::vec t = RandUnitVec(gen);
+			arma::vec k = 2 * arma::vec{
+				t[0] * (t[1] * t[1] - t[2] * t[2]),
+				t[1] * (t[2] * t[2] - t[0] * t[0]),
+				t[2] * (t[0] * t[0] - t[1] * t[1]),
+			};
 			kvecs.push_back(k);
 			break;
 		}
@@ -164,6 +177,16 @@ void SingleSpin::Step()
 			boost::random::bernoulli_distribution<double> Bernoulli(.5);
 			bool res = Bernoulli(gen);
 			k = { (res) ? (1.) : (-1.) , 0. , 0. };
+			break;
+		}
+		case dresselhaus: {
+			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
+			arma::vec t = RandUnitVec(gen);
+			k = 2 * arma::vec{
+				t[0] * (t[1] * t[1] - t[2] * t[2]),
+				t[1] * (t[2] * t[2] - t[0] * t[0]),
+				t[2] * (t[0] * t[0] - t[1] * t[1]),
+			};
 			break;
 		}
 	}
@@ -280,6 +303,7 @@ void SingleSpin::FillSzVec(std::vector<double>& Sz, const int& size, const doubl
 			case rashba_3d:
 			case mixed_3d:
 			case mn_1d:
+			case dresselhaus:
 				Sz[i] += s[2];
 				break;
 			case burkov_2d_Sx:
@@ -333,6 +357,7 @@ void SingleSpinAutocorr::Step()
 			case rashba_3d:
 			case mixed_3d:
 			case mn_1d:
+			case dresselhaus:
 			buf.push(s[2]);
 			break;
 			case burkov_2d_Sx:
