@@ -104,7 +104,7 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 		case dresselhaus: {
 			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
 			arma::vec t = RandUnitVec(gen);
-			arma::vec k = 2 * arma::vec{
+			arma::vec k = arma::vec{
 				t[0] * (t[1] * t[1] - t[2] * t[2]),
 				t[1] * (t[2] * t[2] - t[0] * t[0]),
 				t[2] * (t[0] * t[0] - t[1] * t[1]),
@@ -182,7 +182,7 @@ void SingleSpin::Step()
 		case dresselhaus: {
 			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
 			arma::vec t = RandUnitVec(gen);
-			k = 2 * arma::vec{
+			k = arma::vec{
 				t[0] * (t[1] * t[1] - t[2] * t[2]),
 				t[1] * (t[2] * t[2] - t[0] * t[0]),
 				t[2] * (t[0] * t[0] - t[1] * t[1]),
