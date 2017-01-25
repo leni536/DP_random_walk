@@ -24,9 +24,11 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 		case mixed_3d:
 		case mn_1d:
 		case dresselhaus:
+		case rashba_dressel_2d_z:
 			B_meas << 0 << 0 << B_m;
 			break;
 		case burkov_2d_Sx:
+		case rashba_dressel_2d_x:
 			B_meas << B_m << 0 << 0;
 			break;
 	}
@@ -44,9 +46,11 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 				case mixed_3d:
 				case mn_1d:
 				case dresselhaus:
+				case rashba_dressel_2d_z:
 					init << 0 << 0 << 1;
 					break;
 				case burkov_2d_Sx:
+				case rashba_dressel_2d_x:
 					init << 1 << 0 << 0;
 					break;
 			}
@@ -110,6 +114,25 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 				t[2] * (t[0] * t[0] - t[1] * t[1]),
 			};
 			kvecs.push_back(k);
+			break;
+		}
+		case rashba_dressel_2d_z:
+		case rashba_dressel_2d_x: {
+			boost::random::uniform_on_sphere<double, arma::vec>
+			    RandUnitVec(2);
+			arma::vec t = RandUnitVec(gen);
+			t.reshape(3, 1);
+			arma::vec o1 = arma::vec{
+				-t[1],
+				t[0],
+				0
+			};
+			arma::vec o2 = arma::vec{
+				t[0],
+				-t[1],
+				0
+			};
+			kvecs.push_back(o1+(delta_omega/omega)*o2);
 			break;
 		}
 	}
@@ -187,6 +210,25 @@ void SingleSpin::Step()
 				t[1] * (t[2] * t[2] - t[0] * t[0]),
 				t[2] * (t[0] * t[0] - t[1] * t[1]),
 			};
+			break;
+		}
+		case rashba_dressel_2d_z:
+		case rashba_dressel_2d_x: {
+			boost::random::uniform_on_sphere<double, arma::vec>
+			    RandUnitVec(2);
+			arma::vec t = RandUnitVec(gen);
+			t.reshape(3, 1);
+			arma::vec o1 = arma::vec{
+				-t[1],
+				t[0],
+				0
+			};
+			arma::vec o2 = arma::vec{
+				t[0],
+				-t[1],
+				0
+			};
+			k = (o1+(delta_omega/omega)*o2);
 			break;
 		}
 	}
@@ -304,8 +346,10 @@ void SingleSpin::FillSzVec(std::vector<double>& Sz, const int& size, const doubl
 			case mixed_3d:
 			case mn_1d:
 			case dresselhaus:
+			case rashba_dressel_2d_z:
 				Sz[i] += s[2];
 				break;
+			case rashba_dressel_2d_x:
 			case burkov_2d_Sx:
 				Sz[i] += s[0];
 				break;
@@ -358,9 +402,11 @@ void SingleSpinAutocorr::Step()
 			case mixed_3d:
 			case mn_1d:
 			case dresselhaus:
+			case rashba_dressel_2d_z:
 			buf.push(s[2]);
 			break;
 			case burkov_2d_Sx:
+			case rashba_dressel_2d_x:
 			buf.push(s[0]);
 			break;
 		}
