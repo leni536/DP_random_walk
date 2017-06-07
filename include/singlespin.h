@@ -13,6 +13,8 @@ class SingleSpin {
 		        naiv,
 		        burkov_2d,
 		        burkov_2d_Sx,
+			burkov_2d_angle,
+			burkov_2d_angle_sx,
 		        rashba_3d,
 		        mixed_3d,
 		        mn_1d,

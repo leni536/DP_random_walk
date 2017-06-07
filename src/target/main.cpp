@@ -79,6 +79,8 @@ int main(int argc, char* argv[])
 	else if (model_str=="rashba_dressel_2d_z") model=SingleSpin::rashba_dressel_2d_z;
 	else if (model_str=="rashba_dressel_2d_x") model=SingleSpin::rashba_dressel_2d_x;
 	else if (model_str=="rashba_dressel_2d_xy") model=SingleSpin::rashba_dressel_2d_xy;
+	else if (model_str=="burkov_2d_angle") model=SingleSpin::burkov_2d_angle;
+	else if (model_str=="burkov_2d_angle_sx") model=SingleSpin::burkov_2d_angle_sx;
 	else 
 	{
 		cerr << "Unknown model name: " << model_str << endl;

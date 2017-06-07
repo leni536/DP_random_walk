@@ -25,6 +25,8 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 		case mn_1d:
 		case dresselhaus:
 		case rashba_dressel_2d_z:
+		case burkov_2d_angle:
+		case burkov_2d_angle_sx:
 			B_meas << 0 << 0 << B_m;
 			break;
 		case dresselhaus_xy:
@@ -57,6 +59,9 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 				case rashba_dressel_2d_xy:
 					init << 1 << 0 << 0;
 					break;
+				case burkov_2d_angle:
+				case burkov_2d_angle_sx:
+					init << 1 << 0 << 1;
 			}
 			break;
 		case B_shot:
@@ -77,7 +82,9 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 			break;
 		}
 		case burkov_2d:
-		case burkov_2d_Sx: {
+		case burkov_2d_Sx:
+		case burkov_2d_angle:
+		case burkov_2d_angle_sx: {
 			// 2D model, k vectors are from the unit circle, however
 			// we treat them as 3D vectors.
 			boost::random::uniform_on_sphere<double, arma::vec>
@@ -181,7 +188,9 @@ void SingleSpin::Step()
 			break;
 		}
 		case burkov_2d:
-		case burkov_2d_Sx: {
+		case burkov_2d_Sx:
+		case burkov_2d_angle: 
+		case burkov_2d_angle_sx: {
 			boost::random::uniform_on_sphere<double, arma::vec>
 			    RandUnitVec(2);
 			k = RandUnitVec(gen);
@@ -355,10 +364,12 @@ void SingleSpin::FillSzVec(std::vector<double>& Sz, const int& size, const doubl
 			case mn_1d:
 			case dresselhaus:
 			case rashba_dressel_2d_z:
+			case burkov_2d_angle:
 				Sz[i] += s[2];
 				break;
 			case rashba_dressel_2d_x:
 			case burkov_2d_Sx:
+			case burkov_2d_angle_sx:
 				Sz[i] += s[0];
 				break;
 			case rashba_dressel_2d_xy:
@@ -415,10 +426,12 @@ void SingleSpinAutocorr::Step()
 			case mn_1d:
 			case dresselhaus:
 			case rashba_dressel_2d_z:
+			case burkov_2d_angle:
 			buf.push(s[2]);
 			break;
 			case burkov_2d_Sx:
 			case rashba_dressel_2d_x:
+			case burkov_2d_angle_sx:
 			buf.push(s[0]);
 			break;
 			case rashba_dressel_2d_xy:
