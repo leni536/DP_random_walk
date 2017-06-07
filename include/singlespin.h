@@ -17,6 +17,7 @@ class SingleSpin {
 		        mixed_3d,
 		        mn_1d,
 		        dresselhaus,
+			dresselhaus_xy,
 			rashba_dressel_2d_z,
 			rashba_dressel_2d_x,
 			rashba_dressel_2d_xy
