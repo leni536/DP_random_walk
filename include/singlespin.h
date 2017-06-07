@@ -18,7 +18,8 @@ class SingleSpin {
 		        mn_1d,
 		        dresselhaus,
 			rashba_dressel_2d_z,
-			rashba_dressel_2d_x
+			rashba_dressel_2d_x,
+			rashba_dressel_2d_xy
 		};
 		enum meas_t  {prep,B_shot};
 	protected:

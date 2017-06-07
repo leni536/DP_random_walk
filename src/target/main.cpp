@@ -77,6 +77,7 @@ int main(int argc, char* argv[])
 	else if (model_str=="dresselhaus") model=SingleSpin::dresselhaus;
 	else if (model_str=="rashba_dressel_2d_z") model=SingleSpin::rashba_dressel_2d_z;
 	else if (model_str=="rashba_dressel_2d_x") model=SingleSpin::rashba_dressel_2d_x;
+	else if (model_str=="rashba_dressel_2d_xy") model=SingleSpin::rashba_dressel_2d_xy;
 	else 
 	{
 		cerr << "Unknown model name: " << model_str << endl;

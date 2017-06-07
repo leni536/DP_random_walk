@@ -29,6 +29,7 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 			break;
 		case burkov_2d_Sx:
 		case rashba_dressel_2d_x:
+		case rashba_dressel_2d_xy:
 			B_meas << B_m << 0 << 0;
 			break;
 	}
@@ -51,6 +52,7 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 					break;
 				case burkov_2d_Sx:
 				case rashba_dressel_2d_x:
+				case rashba_dressel_2d_xy:
 					init << 1 << 0 << 0;
 					break;
 			}
@@ -117,7 +119,8 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 			break;
 		}
 		case rashba_dressel_2d_z:
-		case rashba_dressel_2d_x: {
+		case rashba_dressel_2d_x:
+		case rashba_dressel_2d_xy: {
 			boost::random::uniform_on_sphere<double, arma::vec>
 			    RandUnitVec(2);
 			arma::vec t = RandUnitVec(gen);
@@ -213,7 +216,8 @@ void SingleSpin::Step()
 			break;
 		}
 		case rashba_dressel_2d_z:
-		case rashba_dressel_2d_x: {
+		case rashba_dressel_2d_x:
+		case rashba_dressel_2d_xy: {
 			boost::random::uniform_on_sphere<double, arma::vec>
 			    RandUnitVec(2);
 			arma::vec t = RandUnitVec(gen);
@@ -353,6 +357,9 @@ void SingleSpin::FillSzVec(std::vector<double>& Sz, const int& size, const doubl
 			case burkov_2d_Sx:
 				Sz[i] += s[0];
 				break;
+			case rashba_dressel_2d_xy:
+				Sz[i] += s[1];
+				break;
 		}
 	}
 }
@@ -408,6 +415,9 @@ void SingleSpinAutocorr::Step()
 			case burkov_2d_Sx:
 			case rashba_dressel_2d_x:
 			buf.push(s[0]);
+			break;
+			case rashba_dressel_2d_xy:
+			buf.push(s[1]);
 			break;
 		}
 	}
