@@ -27,12 +27,15 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 		case rashba_dressel_2d_z:
 		case burkov_2d_angle:
 		case burkov_2d_angle_sx:
+		case rashba_dressel_3d_z:
+		case rashba_dressel_3d_xz:
 			B_meas << 0 << 0 << B_m;
 			break;
 		case dresselhaus_xy:
 		case burkov_2d_Sx:
 		case rashba_dressel_2d_x:
 		case rashba_dressel_2d_xy:
+		case rashba_dressel_3d_x:
 			B_meas << B_m << 0 << 0;
 			break;
 	}
@@ -51,12 +54,15 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 				case mn_1d:
 				case dresselhaus:
 				case rashba_dressel_2d_z:
+				case rashba_dressel_3d_z:
+				case rashba_dressel_3d_xz:
 					init << 0 << 0 << 1;
 					break;
 				case dresselhaus_xy:
 				case burkov_2d_Sx:
 				case rashba_dressel_2d_x:
 				case rashba_dressel_2d_xy:
+				case rashba_dressel_3d_x:
 					init << 1 << 0 << 0;
 					break;
 				case burkov_2d_angle:
@@ -107,6 +113,24 @@ SingleSpin::SingleSpin(const double& o, const double& deltao, const model_t& m, 
 			arma::vec o2 = la::Rotate( o1, {0,0,atan(1)*2} );
 			o2[2]=0.;
 			kvecs.push_back(o1+(delta_omega/omega)*o2);
+			break;
+		}
+		case rashba_dressel_3d_x:
+		case rashba_dressel_3d_z:
+		case rashba_dressel_3d_xz: {
+			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
+			arma::vec t = RandUnitVec(gen);
+
+			arma::vec orashba = la::Rotate( t, {0,0,atan(1)*2} );
+			orashba[2]=0.;
+
+			arma::vec odressel = arma::vec{
+				t[0] * (t[1] * t[1] - t[2] * t[2]),
+				t[1] * (t[2] * t[2] - t[0] * t[0]),
+				t[2] * (t[0] * t[0] - t[1] * t[1]),
+			};
+
+			kvecs.push_back(odressel+(delta_omega/omega)*orashba);
 			break;
 		}
 		case mn_1d: {
@@ -209,6 +233,24 @@ void SingleSpin::Step()
 			arma::vec o2 = la::Rotate( o1, {0,0,atan(1)*2} );
 			o2[2]=0.;
 			k = o1 + (delta_omega/omega)*o2;
+			break;
+		}
+		case rashba_dressel_3d_x:
+		case rashba_dressel_3d_z:
+		case rashba_dressel_3d_xz: {
+			boost::random::uniform_on_sphere<double, arma::vec> RandUnitVec(3);
+			arma::vec t = RandUnitVec(gen);
+
+			arma::vec orashba = la::Rotate( t, {0,0,atan(1)*2} );
+			orashba[2]=0.;
+
+			arma::vec odressel = arma::vec{
+				t[0] * (t[1] * t[1] - t[2] * t[2]),
+				t[1] * (t[2] * t[2] - t[0] * t[0]),
+				t[2] * (t[0] * t[0] - t[1] * t[1]),
+			};
+
+			k = odressel+(delta_omega/omega)*orashba;
 			break;
 		}
 		case mn_1d: {
@@ -365,11 +407,14 @@ void SingleSpin::FillSzVec(std::vector<double>& Sz, const int& size, const doubl
 			case dresselhaus:
 			case rashba_dressel_2d_z:
 			case burkov_2d_angle:
+			case rashba_dressel_3d_z:
 				Sz[i] += s[2];
 				break;
 			case rashba_dressel_2d_x:
 			case burkov_2d_Sx:
 			case burkov_2d_angle_sx:
+			case rashba_dressel_3d_x:
+			case rashba_dressel_3d_xz:
 				Sz[i] += s[0];
 				break;
 			case rashba_dressel_2d_xy:
@@ -427,11 +472,14 @@ void SingleSpinAutocorr::Step()
 			case dresselhaus:
 			case rashba_dressel_2d_z:
 			case burkov_2d_angle:
+			case rashba_dressel_3d_z:
 			buf.push(s[2]);
 			break;
 			case burkov_2d_Sx:
 			case rashba_dressel_2d_x:
 			case burkov_2d_angle_sx:
+			case rashba_dressel_3d_x:
+			case rashba_dressel_3d_xz:
 			buf.push(s[0]);
 			break;
 			case rashba_dressel_2d_xy:
