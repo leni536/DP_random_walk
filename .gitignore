@@ -1,8 +1,8 @@
-bin/*
-build/*
-tests/*
-dep/*
-include/version.h
+/bin/*
+/build/*
+/tests/*
+/dep/*
+/include/version.h
 !.gitkeep
 
 /include/mathlink.h
@@ -10,3 +10,6 @@ include/version.h
 /mathlink/mathlink.o
 /mathlink/mathlink_template.o
 /mathlink/mathlink_template.c
+
+/doc/html/
+/doc/latex/
