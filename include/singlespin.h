@@ -20,6 +20,7 @@ class SingleSpin {
          *
          * Each Hamiltonian has different built in SOC field, so they have different time evolutions.
          * The direction of interest is relevant for the FillSzVec method.
+	 * For a more detailed description of the models look at \ref index "the main page".
          */
 		enum model_t {
 		        naiv, /**< Fully isotropic 3D model. */
@@ -29,18 +30,18 @@ class SingleSpin {
 			burkov_2d_angle_sx, /**< 2DEG model with Rashba SOC, spins started polarized at an angle to the z axis, x component gathered. */
 		        rashba_3d, /**< 3D model with Rashba SOC. */
 		        mixed_3d, /**< 3D model with both isotropic and Rashba SOC. */
-		        mn_1d,
-		        dresselhaus, /**< 3D model with dresselhaus SOC, z axis relaxation */
-			dresselhaus_xy, /**< 3D model with dresselhaus SOC, spins started with x direction polarization, y component gathered. */
-			rashba_dressel_2d_z, /**< 2DEG model with both rashba and dresselhaus SOC, z axis relaxation. */
-			rashba_dressel_2d_x, /**< 2DEG model with both rashba and dresselhaus SOC, x axis relaxation. */
-			rashba_dressel_2d_xy, /**< 2DEG model with both rashba and dresselhaus SOC, spins started with x direction polarization, y component gathered. */
-			rashba_dressel_3d_x,
-			rashba_dressel_3d_z,
-			rashba_dressel_3d_xz,
-			rashba_dressel_3d_xy,
-			rashba_dressel_3d_111_xx,
-			rashba_dressel_3d_111_zz
+		        mn_1d, /**< 1D model which exactly gives back the result of motional narrowing. */
+		        dresselhaus, /**< 3D model with Dresselhaus SOC, z axis relaxation */
+			dresselhaus_xy, /**< 3D model with Dresselhaus SOC, spins started with x direction polarization, y component gathered. */
+			rashba_dressel_2d_z, /**< 2DEG model with both rashba and Dresselhaus SOC, z axis relaxation. */
+			rashba_dressel_2d_x, /**< 2DEG model with both rashba and Dresselhaus SOC, x axis relaxation. */
+			rashba_dressel_2d_xy, /**< 2DEG model with both rashba and Dresselhaus SOC, spins started with x direction polarization, y component gathered. */
+			rashba_dressel_3d_x, /**< 3D model with both Dresselhaus and Rashba SOC, x axis relaxation. */
+			rashba_dressel_3d_z, /**< 3D model with both Dresselhaus and Rashba SOC, z axis relaxation. */
+			rashba_dressel_3d_xz, /**< 3D model with both Dresselhaus and Rashba SOC, spins started with x direction polarization, z component gathered. */
+			rashba_dressel_3d_xy, /**< 3D model with both Dresselhaus and Rashba SOC, spins started with y direction polarization, y component gathered. */
+			rashba_dressel_3d_111_xx, /**< 3D model with both Dresselhaus and Rashba SOC, [1,1,1] growth direction, x axis relaxation. */
+			rashba_dressel_3d_111_zz /**< 3D model with both Dresselhaus and Rashba SOC, [1,1,1] growth direction, z axis relaxation. */
 		};
         /**
          * \brief Measurement type

@@ -87,22 +87,29 @@ Here I describe the details how these options work.
 + **model**
   The name of the spin model selected.
   It also selects the initial condition and the spin direction of interest.
+  The Hamiltonian has the form:
+  \f[
+    H_\mathrm{SOC}
+    = \hbar \bm{\Omega}(\bm{k})\bm{s}
+  \f]
+  In all models the exact \f$ \bm{\Omega}(\bm{k}) \f$ are paremetrized by two parameters,
+    \f$ \Omega \f$ and \f$ \Delta \Omega \f$.
+  These can be set by the options **omega** and **delta_omega** respectively.
+
   The available models:
     - *naiv* 
       Fully isotropic 3D SOC model,
         we assume a spherical Fermi-surface.
       \f[
-        H_\mathrm{SOC}
-        = \hbar \Omega \frac{\bm{k} \bm{s}}{k_\mathrm{F}}
+        \bm{\Omega}(\bm{k}) = \Omega \frac{\bm{k}}{k_\mathrm{F}}
       \f]
     - *burkov_2d*
       2DEG model with Rashba SOC, z axis relaxation. The shape of the Fermi surface is a circle.
       \f[
-        H_\mathrm{SOC}
-        = \hbar \Omega \frac{(s_x k_y - s_y k_x)}{k_\mathrm{F}}
+        \bm{\Omega}(\bm{k}) = \frac{\Omega}{k_\mathrm{F}} [-k_y, k_x, 0 ]
       \f]
     - *burkov_2d_Sx*
-      2DEG model with Rashba SOC, x axis relaxationa.
+      2DEG model with Rashba SOC, x axis relaxation.
     - *burkov_2d_angle*
       2DEG model with Rashba SOC, spins started polarized at a 45° angle to the z axis, z component gathered.
     - *burkov_2d_angle_sx*
@@ -113,20 +120,87 @@ Here I describe the details how these options work.
       We assume a spherical Fermi-surface.
     - *mixed_3d*
       3D model with both isotropic and Rashba SOC.
+      \f[
+        \bm{\Omega}(\bm{k})
+        = \Omega \frac{\bm{k}}{k_\mathrm{F}} 
+          + \frac{\Delta \Omega}{k_\mathrm{F}} [-k_y, k_x, 0 ]
+      \f]
     - *mn_1d*
       1D model which exactly gives back the result of motional narrowing.
-      The "Fermi-surface" is two points \f$ k=\pm k_\mathrm{F} \f$.
+      The "Fermi-surface" is two points \f$ k=\pm k_\mathrm{F} \f$,
+        \f$ \bm{\Omega}(\bm{k}) = \Omega k/k_\mathrm{F} \f$.
       We start the spin from the z axis, the SOC field is perpendicular to the z axis.
     - *dresselhaus*
       3D model with dresselhaus SOC, z axis relaxation.
+      \f[
+        \bm{\Omega}(\bm{k})
+        = \frac{\Omega}{k_\mathrm{F}^3}
+          \begin{bmatrix}
+            k_x ( k_y^2 - k_z^2 ) \\
+            k_y ( k_z^2 - k_x^2 ) \\
+            k_z ( k_x^2 - k_y^2 )
+          \end{bmatrix}
+      \f]
     - *dresselhaus_xy*
       3D model with dresselhaus SOC, spins started with x direction polarization, y component gathered.
     - *rashba_dressel_2d_z*
       2DEG model with both rashba and dresselhaus SOC, z axis relaxation.
+      \f[
+        \bm{\Omega}(\bm{k})
+        = \frac{\Omega}{k_\mathrm{F}} [-k_y,k_x,0]
+          + \frac{\Delta \Omega}{k_\mathrm{F}} [k_x, -k_y, 0]
+      \f]
     - *rashba_dressel_2d_x*
       2DEG model with both rashba and dresselhaus SOC, x axis relaxation.
     - *rashba_dressel_2d_xy*
       2DEG model with both rashba and dresselhaus SOC, spins started with x direction polarization, y component gathered.
+    - *rashba_dressel_3d_x*
+      3D model with both Dresselhaus and Rashba SOC, x axis relaxation.
+      We assume [0,0,1] growth direction.
+      \f[
+        \bm{\Omega}(\bm{k})
+        = \frac{\Omega}{k_\mathrm{F}^3}
+          \begin{bmatrix}
+            k_x ( k_y^2 - k_z^2 ) \\
+            k_y ( k_z^2 - k_x^2 ) \\
+            k_z ( k_x^2 - k_y^2 )
+          \end{bmatrix}
+          + \frac{\Delta \Omega}{k_\mathrm{F}} 
+            \begin{bmatrix}
+              -k_y \\ k_x \\ 0 
+            \end{bmatrix}
+
+      \f]
+    - *rashba_dressel_3d_z*
+      3D model with both Dresselhaus and Rashba SOC, z axis relaxation.
+    - *rashba_dressel_3d_xz*
+      3D model with both Dresselhaus and Rashba SOC, spins started with x direction polarization, z component gathered.
+    - *rashba_dressel_3d_xy*
+      3D model with both Dresselhaus and Rashba SOC, spins started with y direction polarization, y component gathered.
+    - *rashba_dressel_3d_111_xx*
+      3D model with both Dresselhaus and Rashba SOC, [1,1,1] growth direction, x axis relaxation.
+      The coordinate system's z axis is aligned to the growth direction.
+      \f[
+        \bm{\Omega}(\bm{k}) = 
+          \frac{\Omega}{2\sqrt3 k^3_{\text{F}}}
+            \begin{bmatrix}
+              - k_y( k_x^2 + k_y^2 )
+              - ( k_y^2 - 2 k_x k_y - k_x^2 ) k_z
+              + 4 k_y k_z^2 \\
+                k_x( k_x^2 + k_y^2 )
+              + ( k_x^2 - 2 k_x k_y - k_y^2 ) k_z
+              - 4 k_x k_z^2 \\
+                ( k_x - k_y )( k_x^2 + 4 k_x k_y + k_y^2 )
+            \end{bmatrix}
+        + \frac{\Delta \Omega}{k_{\text{F}}}
+            \begin{bmatrix}
+              -k_y \\
+              k_x  \\
+              0
+            \end{bmatrix}.
+      \f]
+    - *rashba_dressel_3d_111_zz*
+      3D model with both Dresselhaus and Rashba SOC, [1,1,1] growth direction, z axis relaxation.
 
 + **autocorr**: If this option is set, then <s(t+tau)s(t)> time averaged autocorrelation is measured for a single spin.
   At this point the meaning of the options **spins** and **duration** changes.
@@ -135,4 +209,3 @@ Here I describe the details how these options work.
 + **seed** The random seed of the random generator.
   Potentially useful for debugging as a fix value guarantees deterministic runs.
 + **output** The output file for the simulation, default is stdout.
-# TODO
