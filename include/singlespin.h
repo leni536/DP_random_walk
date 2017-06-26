@@ -27,6 +27,8 @@ class SingleSpin {
 			rashba_dressel_3d_z,
 			rashba_dressel_3d_xz,
 			rashba_dressel_3d_xy,
+			rashba_dressel_3d_111_xx,
+			rashba_dressel_3d_111_zz
 		};
 		enum meas_t  {prep,B_shot};
 	protected:

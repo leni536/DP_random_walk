@@ -83,6 +83,8 @@ void simulation(
 	else if (std::string(ModelString)=="rashba_dressel_3d_x") model=SingleSpin::rashba_dressel_3d_x;
 	else if (std::string(ModelString)=="rashba_dressel_3d_xz") model=SingleSpin::rashba_dressel_3d_xz;
 	else if (std::string(ModelString)=="rashba_dressel_3d_xy") model=SingleSpin::rashba_dressel_3d_xy;
+	else if (std::string(ModelString)=="rashba_dressel_3d_111_xx") model=SingleSpin::rashba_dressel_3d_111_xx;
+	else if (std::string(ModelString)=="rashba_dressel_3d_111_zz") model=SingleSpin::rashba_dressel_3d_111_zz;
 	else 
 	{
 		MLPutSymbol(stdlink,"$Failed");
