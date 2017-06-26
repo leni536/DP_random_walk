@@ -79,6 +79,12 @@ void simulation(
 	else if (std::string(ModelString)=="rashba_dressel_2d_xy") model=SingleSpin::rashba_dressel_2d_xy;
 	else if (std::string(ModelString)=="burkov_2d_angle") model=SingleSpin::burkov_2d_angle;
 	else if (std::string(ModelString)=="burkov_2d_angle_sx") model=SingleSpin::burkov_2d_angle_sx;
+	else if (std::string(ModelString)=="rashba_dressel_3d_z") model=SingleSpin::rashba_dressel_3d_z;
+	else if (std::string(ModelString)=="rashba_dressel_3d_x") model=SingleSpin::rashba_dressel_3d_x;
+	else if (std::string(ModelString)=="rashba_dressel_3d_xz") model=SingleSpin::rashba_dressel_3d_xz;
+	else if (std::string(ModelString)=="rashba_dressel_3d_xy") model=SingleSpin::rashba_dressel_3d_xy;
+	else if (std::string(ModelString)=="rashba_dressel_3d_111_xx") model=SingleSpin::rashba_dressel_3d_111_xx;
+	else if (std::string(ModelString)=="rashba_dressel_3d_111_zz") model=SingleSpin::rashba_dressel_3d_111_zz;
 	else 
 	{
 		MLPutSymbol(stdlink,"$Failed");

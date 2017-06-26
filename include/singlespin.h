@@ -34,7 +34,13 @@ class SingleSpin {
 			dresselhaus_xy, /**< 3D model with dresselhaus SOC, spins started with x direction polarization, y component gathered. */
 			rashba_dressel_2d_z, /**< 2DEG model with both rashba and dresselhaus SOC, z axis relaxation. */
 			rashba_dressel_2d_x, /**< 2DEG model with both rashba and dresselhaus SOC, x axis relaxation. */
-			rashba_dressel_2d_xy /**< 2DEG model with both rashba and dresselhaus SOC, spins started with x direction polarization, y component gathered. */
+			rashba_dressel_2d_xy, /**< 2DEG model with both rashba and dresselhaus SOC, spins started with x direction polarization, y component gathered. */
+			rashba_dressel_3d_x,
+			rashba_dressel_3d_z,
+			rashba_dressel_3d_xz,
+			rashba_dressel_3d_xy,
+			rashba_dressel_3d_111_xx,
+			rashba_dressel_3d_111_zz
 		};
         /**
          * \brief Measurement type
